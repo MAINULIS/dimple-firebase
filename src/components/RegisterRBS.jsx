@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import app from '../firebase/firebase.init';
@@ -6,20 +6,30 @@ import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
 
 const auth = getAuth(app);
 const RegisterRBS = () => {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleRegister = event =>{
+        // 1. prevent page refresh
         event.preventDefault();
+        setError('');
+        setSuccess('');
+
+        // 2.get data from form
         const email = event.target.email.value;
         const password = event.target.password.value;
         console.log(email, password)
-        // create firebase
+        // 3. create firebase auth
         createUserWithEmailAndPassword(auth, email, password)
         .then(result =>{
             const loggedUser = result.user;
-            console.log(loggedUser)
+            console.log(loggedUser);
+            event.target.reset();
+            setSuccess('user has been successfully signed up');
         })
         .then(error =>{
-            console.error(error)
+            console.error(error.message);
+            setError(error.message);
         })
     }
      return (
@@ -38,6 +48,8 @@ const RegisterRBS = () => {
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
                     <Form.Check type="checkbox" label="Accept Terms And Conditions" />
                 </Form.Group>
+                <p className='text-danger'>{error}</p>
+                <p className='text-success'>{success}</p>
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
