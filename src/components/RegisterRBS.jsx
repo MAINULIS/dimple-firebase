@@ -18,7 +18,19 @@ const RegisterRBS = () => {
         // 2.get data from form
         const email = event.target.email.value;
         const password = event.target.password.value;
-        console.log(email, password)
+        // console.log(email, password)
+        // validation check
+        if(!/(?=.*[a-z].*[a-z])/.test(password)){
+            setError('Please use at least 2 letter in you password')
+            return;
+        }
+        else if(!/(?=.*\d.*\d.*\d)/.test(password)){
+            setError('Please use at least 3 number in your password')
+            return;
+        }
+        else if(password.length < 6){
+            setError('Password should be at least 6 characters')
+        }
         // 3. create firebase auth
         createUserWithEmailAndPassword(auth, email, password)
         .then(result =>{
