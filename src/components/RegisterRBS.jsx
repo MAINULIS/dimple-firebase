@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import app from '../firebase/firebase.init';
 import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
+import { Link } from 'react-router-dom';
 
 const auth = getAuth(app);
 const RegisterRBS = () => {
@@ -30,6 +31,7 @@ const RegisterRBS = () => {
         }
         else if(password.length < 6){
             setError('Password should be at least 6 characters')
+            return
         }
         // 3. create firebase auth
         createUserWithEmailAndPassword(auth, email, password)
@@ -37,9 +39,10 @@ const RegisterRBS = () => {
             const loggedUser = result.user;
             console.log(loggedUser);
             event.target.reset();
+            setError('')
             setSuccess('user has been successfully signed up');
         })
-        .then(error =>{
+        .catch(error =>{
             console.error(error.message);
             setError(error.message);
         })
@@ -50,12 +53,12 @@ const RegisterRBS = () => {
             <Form onSubmit={handleRegister} >
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" name='email' placeholder="Enter email" />
+                    <Form.Control type="email" name='email' placeholder="Enter email" required />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" name='password' placeholder="Password" />
+                    <Form.Control type="password" name='password' placeholder="Password" required />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
                     <Form.Check type="checkbox" label="Accept Terms And Conditions" />
@@ -65,6 +68,7 @@ const RegisterRBS = () => {
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
+                <p><small>Have an account? Please</small> <Link to='/login'>Login</Link></p>
             </Form>
         </div>
     );
