@@ -1,5 +1,5 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useState } from 'react';
+import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useRef, useState } from 'react';
 import app from '../firebase/firebase.init';
 import { Link } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ const auth =getAuth(app);
 const LoginBS = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const emailRef = useRef();
 
     const handleLogin = event =>{
         event.preventDefault();
@@ -22,10 +23,30 @@ const LoginBS = () => {
             const loggedUser = result.user;
             console.log(loggedUser);
             setSuccess('Successfully logged in')
-            setError('')
+            setError('');
+            event.target.reset();
         })
         .catch(error =>{
             console.log(error.message)
+            setError(error.message)
+        })
+    }
+
+    // if forget password
+    const handleResetPassword =event =>{
+        const email = emailRef.current.value;
+        if(! email){
+            alert('Please provide your email to reset password');
+            return;
+        }
+    
+        sendPasswordResetEmail(auth, email)
+        .then( () =>{
+            alert('Please check your email box')
+            setError('')
+        })
+        .catch(error =>{
+            console.log(error.message);
             setError(error.message)
         })
     }
@@ -35,7 +56,7 @@ const LoginBS = () => {
                 <h2 className='my-4 text-primary'>Please Sign In</h2>
                 <div className="mb-3">
                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                    <input type="email" className="form-control" name='email' placeholder='Your Email' id="exampleInputEmail1" aria-describedby="emailHelp" />
+                    <input type="email" className="form-control" ref={emailRef} name='email' placeholder='Your Email' id="exampleInputEmail1" aria-describedby="emailHelp" />
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Password</label>
@@ -48,6 +69,7 @@ const LoginBS = () => {
                 <p className='text-danger'>{error}</p>
                 <p className='text-success'>{success}</p>
                 <button type="submit" className="btn btn-primary">Submit</button>
+                <p><small>Forget password? Please <button className='btn btn-link' onClick={handleResetPassword} >Reset Password</button></small></p>
                 <p><small>New to this website? Please</small> <Link to='/register-bs'>Sign Up</Link></p>
             </form>
         </div>

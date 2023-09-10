@@ -23,8 +23,8 @@ const RegisterBS = () => {
             setError('Please add at least 2 character in uppercase')
             return;
         }
-        else if(!/(?=.*\d.*\d.*\d)/.test(password)){
-            setError('Please use at least 3 number in you password')
+        else if(!/(?=.*\d.*\d)/.test(password)){
+            setError('Please use at least 2 number in you password')
             return;
         }
         else if(password.length <6){
@@ -37,9 +37,9 @@ const RegisterBS = () => {
             const newUser = result.user;
             console.log(newUser);
             setError('')
-            event.target.reset();
             setSuccess('User has been successfully sign up')
             sendEmailToVerify(result.user);
+            event.target.reset();
         })
         .catch(error =>{
             console.error(error.message)
